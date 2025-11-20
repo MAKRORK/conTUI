@@ -1,0 +1,38 @@
+#pragma once
+#include "CanvasEvent.h"
+#include <iostream>
+#include <queue>
+#include "KeyTUI.h"
+#include "panels/Panel.h"
+
+namespace ctui
+{
+
+	struct connectedEvent
+	{
+		void (Panel::*func)();
+		CanvasEventType cType;
+		Panel *pan;
+		connectedEvent(void (Panel::*_func)(), CanvasEventType _cType, Panel *_pan) : func(_func), cType(_cType), pan(_pan) {}
+	};
+	class CanvasEventSystem
+	{
+	private:
+		std::queue<CanvasEvent *> events;
+		vec2 prevSize;
+		void initEventSystem();
+		std::vector<connectedEvent> connectedEvents;
+
+	public:
+		CanvasEventSystem()
+		{
+			initEventSystem();
+		}
+		void update(bool all_keys = false);
+		bool isKeyPressed(int key);
+		bool isKeyJustPressed(int key);
+		CanvasEvent *popEvent();
+
+		void connectEvent(void (Panel::*_func)(), CanvasEventType _ct, Panel *_pan);
+	};
+}
