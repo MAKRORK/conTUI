@@ -15,6 +15,7 @@ namespace ctui
 		const static Err CanvasPanelCantBeChildError;
 		const static Err CursorOutOfRenge;
 		const static Err ConvertCharToUtf8Error;
+		const static Err drawNoDrawableError;
 		bool operator==(const Err &other) const
 		{
 			return id == other.id;

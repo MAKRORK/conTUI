@@ -117,4 +117,10 @@ namespace ctui
 		}
 		return Err::Ok;
 	}
+	bool ConsoleBase::isConsoleFocused()
+	{
+		HWND console = GetConsoleWindow();
+		HWND foreground = GetForegroundWindow(); // TO DO
+		return true;
+	}
 }

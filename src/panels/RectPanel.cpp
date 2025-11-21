@@ -7,8 +7,8 @@ namespace ctui
 	{
 		attribute a = attribute(ConColor::getForeColor(color));
 		a.addAttribute(ConColor::getForeColor(backColor));
-		ctText ct = ctText(getSize(), symbol(fillChar, a));
-		vec2 s = getSize();
+		ctText ct = ctText(getAbsoluteSize(), symbol(fillChar, a));
+		vec2 s = getAbsoluteSize();
 		if (border)
 		{
 			int st = 0, fn = s.x;
@@ -79,7 +79,7 @@ namespace ctui
 	}
 	rawText *RectPanel::getRawText(vec2 offset, vec2 maxSize)
 	{
-		vec2 s = getSize();
+		vec2 s = getAbsoluteSize();
 		if (this->r)
 			delete r;
 		r = new rawText(maxSize - offset);

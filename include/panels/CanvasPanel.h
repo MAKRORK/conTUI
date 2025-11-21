@@ -30,8 +30,8 @@ namespace ctui
 		}
 		~CanvasPanel();
 		void debug_outMask();
-		void drawAll(Panel *p = nullptr);
-		void drawRaw(Panel *p);
+		Err drawAll(Panel *p = nullptr);
+		Err drawRaw(Panel *p);
 		void setSize(vec2 _size) override;
 		rawText *getRawText(vec2 offset, vec2 maxSize) override;
 		CanvasEventSystem *getEventSystem() { return eventSystem; }

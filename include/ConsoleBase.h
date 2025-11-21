@@ -20,5 +20,6 @@ namespace ctui
 		static Err outChar(const symbol &sym, int x, int y);
 		static Err outRawText(rawText *rt, int x, int y);
 		static Err addCharToString(std::string &s, char32_t &c, int count = 1);
+		bool isConsoleFocused();
 	};
 }

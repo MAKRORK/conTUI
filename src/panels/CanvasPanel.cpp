@@ -15,7 +15,7 @@ namespace ctui
 			delete buffer;
 		}
 		// std::cout << "OK 0.2\n";
-		vec2 size = getSize();
+		vec2 size = getAbsoluteSize();
 		if (maskBuffer)
 		{
 			// std::cout << "OK 1.0" << "\n";
@@ -26,7 +26,7 @@ namespace ctui
 			delete[] maskBuffer;
 		}
 		setSize(ConsoleBase::getConsoleBase()->getConsoleSize());
-		size = getSize();
+		size = getAbsoluteSize();
 		// std::cout << size.x << " " << size.y << "\n";
 		// std::cout << "OK 0.3\n";
 		maskBuffer = new Panel **[size.x];
@@ -40,17 +40,26 @@ namespace ctui
 		}
 		buffer = new ctText(size);
 	}
-	void CanvasPanel::drawAll(Panel *p)
+	Err CanvasPanel::drawAll(Panel *p)
 	{
 		if (!p)
 			p = this;
-		drawRaw(p);
-		// std::cout << "hhhhhhhhhhhhhhhhhh\n";
+		// std::cout << p->debug_sym << "\n";
+		if (p->getDrawable())
+		{
+			Err res = drawRaw(p);
+			if (drawRaw(p) != Err::Ok)
+			{
+				return res;
+			}
+		}
+
 		std::vector<Panel *> *ch = p->getChilds();
 		for (int i = 0; i < ch->size(); i++)
 		{
 			drawAll((*ch)[i]);
 		}
+		return Err::Ok;
 	}
 
 	void CanvasPanel::setSize(vec2 _size)
@@ -58,9 +67,9 @@ namespace ctui
 		setSizeWithoutRebild(_size);
 	}
 
-	void CanvasPanel::drawRaw(Panel *p)
+	Err CanvasPanel::drawRaw(Panel *p)
 	{
-		vec2 ps = p->getGlobalPos();
+		vec2 ps = p->getAbsolutePos();
 		vec2 o = vec2(0);
 		vec2 cs = ConsoleBase::getConsoleBase()->getConsoleSize();
 		if (ps.x < 0)
@@ -71,7 +80,7 @@ namespace ctui
 		{
 			o.y = -ps.y;
 		}
-		vec2 ms = p->getSize();
+		vec2 ms = p->getAbsoluteSize();
 		if (ps.x + ms.x > cs.x)
 		{
 			ms.x -= (ps.x + ms.x - cs.x);
@@ -81,11 +90,14 @@ namespace ctui
 			ms.y -= (ps.y + ms.y - cs.y);
 		}
 		rawText *rt = p->getRawText(o, ms);
+		if (!rt)
+			return Err::drawNoDrawableError;
 		ConsoleBase::outRawText(rt, ps.x + o.x, ps.y + o.y);
+		return Err::Ok;
 	}
 	rawText *CanvasPanel::getRawText(vec2 offset, vec2 maxSize)
 	{
-		vec2 s = getSize();
+		vec2 s = getAbsoluteSize();
 		if (r)
 			delete r;
 		r = new rawText(s);
@@ -137,7 +149,7 @@ namespace ctui
 	}
 	void CanvasPanel::debug_outMask()
 	{
-		vec2 size = getSize();
+		vec2 size = getAbsoluteSize();
 
 		std::cout << size.x << " " << size.y << "\n";
 		for (int i = 0; i < size.y; i++)
@@ -156,9 +168,9 @@ namespace ctui
 	void CanvasPanel::build(Panel *pan)
 	{
 		std::vector<Panel *> *ch = pan->getChilds();
-		vec2 ptmp = pan->getGlobalPos();
-		vec2 stmp = pan->getSize();
-		vec2 cs = getSize();
+		vec2 ptmp = pan->getAbsolutePos();
+		vec2 stmp = pan->getAbsoluteSize();
+		vec2 cs = getAbsoluteSize();
 		pan->setCovered(false);
 
 		// std::cout << "      " << ptmp.x << ", " << ptmp.y << '\n';
