@@ -2,6 +2,7 @@
 
 namespace ctui
 {
+	attribute attribute::clear = attribute(0);
 	ctText::ctText(vec2 _size, symbol fillChar)
 	{
 		size = _size;

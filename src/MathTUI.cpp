@@ -23,3 +23,11 @@ int ctui::ctmax(int a, int b)
 		return b;
 	return a;
 }
+double ctui::pov(double a, int p)
+{
+	for (int i = 1; i < p; i++)
+	{
+		a *= a;
+	}
+	return a;
+}

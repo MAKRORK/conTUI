@@ -6,19 +6,20 @@
 
 namespace ctui
 {
+
 	void CanvasPanel::initBuffer()
 	{
-		// std::cout << "OK 0.0\n";
+
 		if (buffer && !buffer->empty())
 		{
-			// std::cout << "OK 0.1\n";
+
 			delete buffer;
 		}
-		// std::cout << "OK 0.2\n";
+
 		vec2 size = getAbsoluteSize();
 		if (maskBuffer)
 		{
-			// std::cout << "OK 1.0" << "\n";
+
 			for (int i = 0; i < size.y; i++)
 			{
 				delete[] maskBuffer[i];
@@ -27,8 +28,6 @@ namespace ctui
 		}
 		setSize(ConsoleBase::getConsoleBase()->getConsoleSize());
 		size = getAbsoluteSize();
-		// std::cout << size.x << " " << size.y << "\n";
-		// std::cout << "OK 0.3\n";
 		maskBuffer = new Panel **[size.x];
 		for (int i = 0; i < size.y; i++)
 		{
@@ -44,7 +43,6 @@ namespace ctui
 	{
 		if (!p)
 			p = this;
-		// std::cout << p->debug_sym << "\n";
 		if (p->getDrawable())
 		{
 			Err res = drawRaw(p);
@@ -116,8 +114,9 @@ namespace ctui
 	}
 	void CanvasPanel::onResize()
 	{
-		// std::cout << "OK\n";
 		initBuffer();
+		build(this);
+		ConsoleBase::consoleClear();
 		drawAll();
 	}
 
@@ -186,6 +185,7 @@ namespace ctui
 		}
 		for (int i = 0; i < ch->size(); i++)
 		{
+			(*ch)[i]->onResize();
 			build((*ch)[i]);
 		}
 	}

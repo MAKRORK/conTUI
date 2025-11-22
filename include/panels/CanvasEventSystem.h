@@ -22,17 +22,18 @@ namespace ctui
 		vec2 prevSize;
 		void initEventSystem();
 		std::vector<connectedEvent> connectedEvents;
-
-	public:
+		static CanvasEventSystem *eventSystem;
 		CanvasEventSystem()
 		{
 			initEventSystem();
 		}
+
+	public:
 		void update(bool all_keys = false);
 		bool isKeyPressed(int key);
 		bool isKeyJustPressed(int key);
 		CanvasEvent *popEvent();
-
+		static CanvasEventSystem *getEventSystem();
 		void connectEvent(void (Panel::*_func)(), CanvasEventType _ct, Panel *_pan);
 	};
 }

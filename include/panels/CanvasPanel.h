@@ -24,7 +24,7 @@ namespace ctui
 		CanvasPanel() : Panel()
 		{
 			this->initBuffer();
-			eventSystem = new CanvasEventSystem();
+			eventSystem = CanvasEventSystem::getEventSystem();
 			eventSystem->connectEvent(&Panel::onResize, CanvasEventType::ResizedEvent, this);
 			debug_sym = U'C';
 		}
@@ -34,7 +34,7 @@ namespace ctui
 		Err drawRaw(Panel *p);
 		void setSize(vec2 _size) override;
 		rawText *getRawText(vec2 offset, vec2 maxSize) override;
-		CanvasEventSystem *getEventSystem() { return eventSystem; }
+
 		void onResize() override;
 
 		Err addChild(Panel *p) override;

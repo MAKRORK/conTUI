@@ -17,7 +17,21 @@ namespace ctui
 		static int getForeColor(const ConColor &col);
 		static int getBackColor(const ConColor &col);
 
+		static ConColor getColorFromRGB(int r, int g, int b, float gamma = 2.2f);
+
 		static ConColor toBright(const ConColor &col);
+
+		bool operator==(const ConColor &other) const
+		{
+			return col == other.col;
+		}
+
+		bool operator!=(const ConColor &other) const
+		{
+			return !(*this == other);
+		}
+
+		static const ConColor none;
 
 		static const ConColor white;
 		static const ConColor grey;

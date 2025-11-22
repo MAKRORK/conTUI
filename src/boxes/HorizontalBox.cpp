@@ -34,18 +34,26 @@ namespace ctui
 	}
 	vec2 HorizontalBox::getPanelLocalSize(Panel *p)
 	{
+
 		vec2 s = getAbsoluteSize();
+
 		vec2 rs = vec2(0);
 		rs.y = s.y;
 		if (getAutoSize())
 		{
-			rs.x = s.x / (int)getChilds()->size();
+
+			int c = (int)getChilds()->size();
+			if (c == 0)
+			{
+				c = 1;
+			}
+			rs.x = s.x / c;
 		}
 		else
 		{
 			rs.x = p->getSize().x;
 		}
-		// std::cout << rs.x << ", " << rs.y << '\n';
+
 		return rs;
 	}
 }

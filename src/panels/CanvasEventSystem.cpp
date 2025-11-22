@@ -4,6 +4,15 @@
 
 namespace ctui
 {
+	CanvasEventSystem *CanvasEventSystem::eventSystem = nullptr;
+	CanvasEventSystem *CanvasEventSystem::getEventSystem()
+	{
+		if (!eventSystem)
+		{
+			eventSystem = new CanvasEventSystem();
+		}
+		return eventSystem;
+	}
 	void CanvasEventSystem::initEventSystem()
 	{
 		prevSize = ConsoleBase::getConsoleBase()->getConsoleSize();

@@ -1,7 +1,11 @@
 #include "ConColor.h"
+#include "MathTUI.h"
+#include <cmath>
+#include "Log.h"
 
 namespace ctui
 {
+	const ConColor ConColor::none = ConColor(-1);
 	const ConColor ConColor::white = ConColor(0x7);
 	const ConColor ConColor::grey = ConColor(0x7);
 	const ConColor ConColor::black = ConColor();
@@ -44,6 +48,31 @@ namespace ctui
 	{
 		return col.col + 40;
 	}
+
+	ConColor ConColor::getColorFromRGB(int r, int g, int b, float gamma)
+	{
+		int c = 0;
+		r = (int)round(powf((float)r / 255.f, gamma) * 2.f);
+		g = (int)round(powf((float)g / 255.f, gamma) * 2.f);
+		b = (int)round(powf((float)b / 255.f, gamma) * 2.f);
+
+		if (r)
+		{
+			c |= 0b001;
+		}
+		if (g)
+		{
+			c |= 0b010;
+		}
+		if (b)
+		{
+			c |= 0b100;
+		}
+		if (r > 1 || g > 1 || b > 1)
+			c += 60;
+		return ConColor(c);
+	}
+
 	ConColor ConColor::toBright(const ConColor &col)
 	{
 		return col.col + 60;

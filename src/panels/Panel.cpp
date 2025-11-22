@@ -2,6 +2,7 @@
 #include "panels/CanvasPanel.h"
 #include "ConsoleBase.h"
 #include "boxes/Box.h"
+#include "Log.h"
 
 namespace ctui
 {
@@ -91,14 +92,18 @@ namespace ctui
 	}
 	vec2 Panel::getAbsoluteSize()
 	{
-		vec2 s = size;
+		vec2 s = getSize();
+
 		if (parent)
 		{
 			Box *b = dynamic_cast<Box *>(parent);
+
 			if (b)
 			{
+
 				return b->getPanelLocalSize(this) - vec2(padding[0] + padding[2], padding[1] + padding[3]);
 			}
+
 			if (stl.posType == PositionType::Relative)
 			{
 				if (stl.alignH == AlignHorizontal::FULL)

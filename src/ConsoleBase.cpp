@@ -123,4 +123,8 @@ namespace ctui
 		HWND foreground = GetForegroundWindow(); // TO DO
 		return true;
 	}
+	void ConsoleBase::consoleClear()
+	{
+		system("cls");
+	}
 }

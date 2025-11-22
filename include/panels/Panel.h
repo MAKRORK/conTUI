@@ -16,13 +16,13 @@ namespace ctui
 		Panel *parent = nullptr;
 		style stl = style();
 		bool covered = false;
-		void setParent(Panel *p);
+
 		int padding[4] = {0, 0, 0, 0};
 		bool drawable = true;
 
 	protected:
-		virtual void
-		rebuild();
+		virtual void rebuild();
+		virtual void setParent(Panel *p);
 		rawText *r = nullptr;
 		virtual void redraw(Panel *p = nullptr);
 		void setSizeWithoutRebild(vec2 _size)
@@ -35,9 +35,9 @@ namespace ctui
 		Panel(vec2 _pos = vec2(0), vec2 _size = vec2(0)) : pos(_pos), size(_size) {}
 		virtual ~Panel();
 		vec2 getPos() { return pos; }
-		vec2 getSize() { return size; }
+		virtual vec2 getSize() { return size; }
 		vec2 getAbsolutePos();
-		vec2 getAbsoluteSize();
+		virtual vec2 getAbsoluteSize();
 		style getStyle() { return stl; }
 		void setCovered(bool _c) { covered = _c; }
 		bool getCovered() { return covered; }

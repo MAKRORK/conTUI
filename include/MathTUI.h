@@ -26,4 +26,5 @@ namespace ctui
 	};
 	int ctmin(int a, int b);
 	int ctmax(int a, int b);
+	double pov(double a, int p);
 }

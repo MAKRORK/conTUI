@@ -19,6 +19,7 @@ namespace ctui
 		{
 			atts.push_back(_a);
 		}
+		static attribute clear;
 		std::string getAttributes()
 		{
 			if (atts.empty())
