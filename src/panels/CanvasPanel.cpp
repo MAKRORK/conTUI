@@ -108,7 +108,6 @@ namespace ctui
 			r->txt[i] += a.getAttributes();
 			ConsoleBase::addCharToString(r->txt[i], ch, s.x);
 			r->txt[i] += c.getAttributes();
-			// std::cout << rt->txt[i] << '\n';
 		}
 		return r;
 	}
@@ -172,9 +171,7 @@ namespace ctui
 		vec2 cs = getAbsoluteSize();
 		pan->setCovered(false);
 
-		// std::cout << "      " << ptmp.x << ", " << ptmp.y << '\n';
-		// std::cout << "      " << stmp.x << ", " << stmp.y << '\n';
-		vec2 fn = vec2(ctmin(cs.x, (stmp.x + ptmp.x)), ctmin(cs.y, stmp.y + ptmp.y));
+				vec2 fn = vec2(ctmin(cs.x, (stmp.x + ptmp.x)), ctmin(cs.y, stmp.y + ptmp.y));
 		for (int i = ctmax(ptmp.y, 0); i < fn.y; i++)
 		{
 			for (int j = ctmax(ptmp.x, 0); j < fn.x; j++)

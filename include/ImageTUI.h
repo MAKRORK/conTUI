@@ -25,13 +25,14 @@ namespace ctui
 		static ImageTUI *imageTUI;
 		ImageTUI();
 		~ImageTUI();
-		char getCharFromBrigth(int br);
+		char getCharFromBrigth(int br, bool inverted = false);
 		std::string gradient = " .:-=+*#%@";
 
 	public:
 		static ImageTUI *getImt();
 		static void deinit();
-		getImResult getTextImage(std::string path, vec2 size, bool monochrome = false, ConColor monochromeColor = ConColor::white);
+		getImResult getTextImage(std::string path, vec2 size, bool monochrome = false, bool inverted = false, ConColor monochromeColor = ConColor::white);
+		void setGradient(std::string _gradient);
 		static char32_t noLoadedSym;
 	};
 }

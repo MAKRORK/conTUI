@@ -12,11 +12,14 @@ src/Base.cpp
 src/Error.cpp
 src/MathTUI.cpp
 src/ImageTUI.cpp
+src/TextTUI.cpp
 src/Log.cpp
 src/ConsoleBase.cpp
 src/panels/CanvasEventSystem.cpp
 src/panels/RectPanel.cpp
 src/panels/ImagePanel.cpp
+src/panels/MarkdownTextPanel.cpp
+src/panels/TextPanel.cpp
 src/boxes/VerticalBox.cpp
 src/boxes/HorizontalBox.cpp)
 

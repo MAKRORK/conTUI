@@ -53,7 +53,7 @@ namespace ctui
 		}
 		~rawText()
 		{
-			// std::cout << "raw deleted\n";
+
 			delete[] txt;
 		}
 	};

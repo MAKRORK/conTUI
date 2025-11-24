@@ -18,6 +18,7 @@ namespace ctui
 		bool noImage = true;
 		ConColor background = ConColor::black;
 		bool monochrome = false;
+		bool inverted = false;
 		ConColor monochromeColor = ConColor::white;
 
 	protected:
@@ -39,6 +40,8 @@ namespace ctui
 			imagePath = _path;
 			loadImage();
 		}
+		void setImagetStyle(bool _monochrome, bool _inverted = false, ConColor _monochromeColor = ConColor::white, ConColor _background = ConColor::black);
+
 		void setSize(vec2 _size) override;
 		void setStyle(PositionType _posType) override;
 		void setStyle(PositionType _posType, AlignHorizontal _alignH, AlignVertical _alignV) override;
@@ -51,5 +54,9 @@ namespace ctui
 
 		vec2 getSize() override;
 		vec2 getAbsoluteSize() override;
+		bool getMonochrome() { return monochrome; }
+		bool getInverted() { return inverted; }
+		ConColor getMonochromeColor() { return monochromeColor; }
+		ConColor getBackgroundColor() { return background; }
 	};
 }

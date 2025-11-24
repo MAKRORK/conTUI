@@ -7,6 +7,12 @@ namespace ctui
 		vec2 rp = vec2(0);
 		vec2 s = getAbsoluteSize();
 		std::vector<Panel *> *ch = getChilds();
+		int c = (int)ch->size();
+		if (c == 0)
+		{
+			c = 1;
+		}
+		int d = (int)(s.x % c);
 		if (getAutoSize())
 		{
 			int n = 0;
@@ -18,7 +24,12 @@ namespace ctui
 					break;
 				}
 			}
-			rp.x = n * (int)(s.x / ch->size());
+
+			rp.x = n * (int)(s.x / c);
+			if (c - n < d)
+			{
+				rp.x += n - (c - d);
+			}
 		}
 		else
 		{
@@ -29,7 +40,7 @@ namespace ctui
 				rp.x += (*ch)[n]->getSize().x;
 			}
 		}
-		// std::cout << rp.x << ", " << rp.y << '\n';
+
 		return rp;
 	}
 	vec2 HorizontalBox::getPanelLocalSize(Panel *p)
@@ -42,12 +53,27 @@ namespace ctui
 		if (getAutoSize())
 		{
 
-			int c = (int)getChilds()->size();
+			std::vector<Panel *> *ch = getChilds();
+			int c = (int)ch->size();
 			if (c == 0)
 			{
 				c = 1;
 			}
+			int d = (int)(s.x % c);
 			rs.x = s.x / c;
+			int n = 0;
+			for (int i = 0; i < ch->size(); i++)
+			{
+				if ((*ch)[i] == p)
+				{
+					n = i;
+					break;
+				}
+			}
+			if (c - n <= d)
+			{
+				rs.x++;
+			}
 		}
 		else
 		{

@@ -21,7 +21,7 @@ namespace ctui
 
 		vec2 p = Panel::getAbsoluteSize();
 
-		getImResult res = ImageTUI::getImt()->getTextImage(imagePath, Panel::getAbsoluteSize(), monochrome, monochromeColor);
+		getImResult res = ImageTUI::getImt()->getTextImage(imagePath, Panel::getAbsoluteSize(), monochrome, inverted, monochromeColor);
 
 		if (res.err != Err::Ok)
 		{
@@ -44,6 +44,14 @@ namespace ctui
 			delete[] it;
 		}
 	}
+	void ImagePanel::setImagetStyle(bool _monochrome, bool _inverted, ConColor _monochromeColor, ConColor _background)
+	{
+		monochrome = _monochrome;
+		inverted = _inverted;
+		monochromeColor = _monochromeColor;
+		background = _background;
+		loadImage();
+	}
 	void ImagePanel::onResize()
 	{
 		Box *b = dynamic_cast<Box *>(getParent());
@@ -57,7 +65,7 @@ namespace ctui
 		Box *b = dynamic_cast<Box *>(p);
 		if (getStyle().posType == PositionType::Relative || b)
 		{
-			// std::cout << "mda\n";
+
 			loadImage();
 		}
 	}

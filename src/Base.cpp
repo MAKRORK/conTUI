@@ -23,7 +23,6 @@ namespace ctui
 	{
 		if (txt)
 		{
-			// std::cout << "OK 1.0\n";
 			for (int i = 0; i < size.y; i++)
 			{
 				delete[] txt[i];
