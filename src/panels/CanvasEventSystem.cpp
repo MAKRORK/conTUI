@@ -49,14 +49,6 @@ namespace ctui
 			return new CanvasEvent();
 		return events.front();
 	}
-	bool CanvasEventSystem::isKeyPressed(int key)
-	{
-		return (GetAsyncKeyState(key) & 0x8000) && ConsoleBase::getConsoleBase()->isConsoleFocused();
-	}
-	bool CanvasEventSystem::isKeyJustPressed(int key)
-	{
-		return (GetAsyncKeyState(key) & 0x1) && ConsoleBase::getConsoleBase()->isConsoleFocused();
-	}
 
 	void CanvasEventSystem::connectEvent(void (Panel::*_func)(), CanvasEventType _ct, Panel *_pan)
 	{

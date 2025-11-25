@@ -14,8 +14,8 @@ namespace ctui
 		{
 			delete r;
 		}
-		Log::getLog()->logString("x = " + std::to_string(getAbsoluteSize().x));
-		r = autoWrap(txt, getAbsoluteSize().x, true, foreColor, backColor);
+		r = autoWrap(txt, getAbsoluteSize().x, offset, maxSize, true, foreColor, backColor);
 		return r;
 	}
+
 }

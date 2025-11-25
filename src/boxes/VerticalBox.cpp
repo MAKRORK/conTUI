@@ -14,7 +14,7 @@ namespace ctui
 			c = 1;
 		}
 		int d = (int)(s.y % c);
-		Log::getLog()->logString("d = " + std::to_string(d));
+		// Log::getLog()->logString("d = " + std::to_string(d));
 		if (getAutoSize())
 		{
 			int n = 0;

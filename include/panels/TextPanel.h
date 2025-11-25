@@ -11,6 +11,8 @@ namespace ctui
 		ConColor foreColor = ConColor::white;
 		ConColor backColor = ConColor::black;
 		std::string txt = "";
+		AlignHorizontal textAlignHorizontal = AlignHorizontal::LEFT;
+		AlignVertical textAlignVertical = AlignVertical::TOP;
 
 	public:
 		TextPanel(vec2 _pos, vec2 _size) : Panel(_pos, _size) {}

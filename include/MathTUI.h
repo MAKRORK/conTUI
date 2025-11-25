@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 namespace ctui
 {
@@ -23,8 +24,14 @@ namespace ctui
 		vec2 operator/(int b) const { return vec2(x / b, y / b); }
 		vec2 operator-() const { return vec2(-x, -y); }
 		bool inRect(vec2 _p, vec2 _s);
+		std::string toString()
+		{
+			return std::to_string(x) + ", " + std::to_string(y);
+		}
 	};
 	int ctmin(int a, int b);
 	int ctmax(int a, int b);
 	double pov(double a, int p);
+	int clamp(int a, int mn, int mx);
+	int snake(int a, int mx);
 }

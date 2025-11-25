@@ -1,8 +1,73 @@
 #include "TextTUI.h"
+#include "Log.h"
 
 namespace ctui
 {
-	rawText *autoWrap(const std::string &input, int maxLength, bool withCols, ConColor col, ConColor backCol)
+
+	std::string getLineWithOffset(std::string input, int offset, int maxSize = -1)
+	{
+		bool ansi_started = false;
+		std::string ansi = "";
+		std::string output = "";
+		int real_len = 0;
+		for (int i = 0; i < input.size(); i++)
+		{
+			if (maxSize != -1 && real_len - offset >= maxSize)
+			{
+				return output;
+			}
+			if (input[i] == 0x1b)
+			{
+				ansi_started = true;
+			}
+			if (real_len < offset)
+			{
+				if (ansi_started)
+				{
+					ansi += input[i];
+				}
+			}
+			else
+			{
+				output += input[i];
+			}
+			if (!ansi_started)
+			{
+				real_len++;
+			}
+
+			if (ansi_started && input[i] == 'm')
+			{
+				ansi_started = false;
+				if (input[i - 1] == '0' && input[i - 2] == '[')
+				{
+					ansi = "";
+				}
+			}
+		}
+		return output;
+	}
+	bool isUnicodeCont(unsigned char c)
+	{
+		c = c >> 6;
+		if (c == 0b10)
+			return true;
+		return false;
+	}
+	bool isUnicodeStart(unsigned char c)
+	{
+		c = c >> 3;
+		if (c == 0b11110)
+			return true;
+		c = c >> 1;
+		if (c == 0b1110)
+			return true;
+		c = c >> 1;
+		if (c == 0b110)
+			return true;
+		return false;
+	}
+	rawText *autoWrap(const std::string &input, int maxLength, vec2 offset, vec2 maxSize, bool withCols, ConColor col, ConColor backCol)
 	{
 		std::vector<std::string> lines;
 		std::string cur = "";
@@ -11,6 +76,7 @@ namespace ctui
 		int cur_len = 0;
 		int last_space = -1;
 		bool ansi_started = false;
+		bool unicode_started = false;
 
 		attribute a = attribute(ConColor::getForeColor(col));
 		a.addAttribute(ConColor::getBackColor(backCol));
@@ -18,6 +84,7 @@ namespace ctui
 
 		for (int i = 0; i < input.size(); i++)
 		{
+			// Log::getLog()->logString(std::to_string((int)input[i]));
 			if (input[i] == 0x1b)
 			{
 				ansi_started = true;
@@ -25,14 +92,28 @@ namespace ctui
 			if (input[i] == '\n')
 			{
 				if (affter_space != "")
-					lines.push_back(cur + " " + affter_space);
+				{
+					if (offset.x != 0)
+					{
+						lines.push_back(getLineWithOffset(cur + " " + affter_space, offset.x, maxSize.x));
+					}
+					else
+						lines.push_back(cur + " " + affter_space);
+				}
 				else
-					lines.push_back(cur);
+				{
+					if (offset.x != 0)
+					{
+						lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
+					}
+					else
+						lines.push_back(cur);
+				}
 				cur = "";
 				affter_space = "";
 				after_space_len = 0;
 				last_space = -1;
-				i++;
+				// i++;
 				if (input[i + 1] == ' ')
 				{
 					i++;
@@ -61,7 +142,12 @@ namespace ctui
 			{
 				if (last_space > 0)
 				{
-					lines.push_back(cur);
+					if (offset.x != 0)
+					{
+						lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
+					}
+					else
+						lines.push_back(cur);
 					cur = affter_space;
 					last_space = -1;
 					cur_len = after_space_len;
@@ -70,7 +156,12 @@ namespace ctui
 				}
 				else
 				{
-					lines.push_back(cur);
+					if (offset.x != 0)
+					{
+						lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
+					}
+					else
+						lines.push_back(cur);
 					cur = "";
 					affter_space = "";
 					last_space = -1;
@@ -78,17 +169,61 @@ namespace ctui
 					after_space_len = 0;
 				}
 			}
-			if (last_space == -1)
+			if (isUnicodeStart(input[i]) && isUnicodeCont(input[i + 1]))
 			{
-				cur += input[i];
-				if (!ansi_started)
-					cur_len++;
+				unicode_started = true;
+				if (last_space == -1)
+				{
+					cur += input[i];
+					if (!ansi_started)
+						cur_len++;
+				}
+				else
+				{
+					affter_space += input[i];
+					if (!ansi_started)
+						after_space_len++;
+				}
+			}
+			else if (unicode_started)
+			{
+				if (last_space == -1)
+				{
+					cur += input[i];
+				}
+				else
+				{
+					affter_space += input[i];
+				}
+				if (!isUnicodeCont(input[i]))
+				{
+					unicode_started = false;
+					if (last_space == -1)
+					{
+						if (!ansi_started)
+							cur_len++;
+					}
+					else
+					{
+						if (!ansi_started)
+							after_space_len++;
+					}
+				}
 			}
 			else
 			{
-				affter_space += input[i];
-				if (!ansi_started)
-					after_space_len++;
+				if (last_space == -1)
+				{
+					cur += input[i];
+					if (!ansi_started)
+						cur_len++;
+				}
+				else
+				{
+					affter_space += input[i];
+					if (!ansi_started)
+						after_space_len++;
+				}
 			}
 
 			if (ansi_started && input[i] == 'm')
@@ -108,29 +243,43 @@ namespace ctui
 			}
 		}
 		if (affter_space != "")
-			lines.push_back(cur + " " + affter_space);
+		{
+			if (offset.x != 0)
+			{
+				lines.push_back(getLineWithOffset(cur + " " + affter_space, offset.x, maxSize.x));
+			}
+			else
+				lines.push_back(cur + " " + affter_space);
+		}
 		else
-			lines.push_back(cur);
+		{
+			if (offset.x != 0)
+			{
+				lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
+			}
+			else
+				lines.push_back(cur);
+		}
 
 		rawText *rt = new rawText(vec2(maxLength, (int)lines.size()));
-		for (int i = 0; i < lines.size(); i++)
+		for (int i = 0; i < ctmin(maxSize.y, (int)lines.size()); i++)
 		{
 			if (withCols)
 				rt->txt[i] += a.getAttributes();
-			rt->txt[i] += lines[i];
+			rt->txt[i] += lines[i + offset.y];
 			if (withCols)
 				rt->txt[i] += c.getAttributes();
 		}
 		return rt;
 	}
 
-	rawText *autoWrap(rawText *rt, int maxLength, bool withCols, ConColor col, ConColor backCol)
+	rawText *autoWrap(rawText *rt, int maxLength, vec2 offset, vec2 maxSize, bool withCols, ConColor col, ConColor backCol)
 	{
 		std::vector<rawText *> rts;
 		int lines = 0;
 		for (int i = 0; i < rt->size.y; i++)
 		{
-			rawText *rtt = autoWrap(rt->txt[i], maxLength, withCols, col, backCol);
+			rawText *rtt = autoWrap(rt->txt[i], maxLength, offset, maxSize, withCols, col, backCol);
 			lines += rtt->size.y;
 			rts.push_back(rtt);
 		}

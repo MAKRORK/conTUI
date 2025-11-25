@@ -30,8 +30,6 @@ namespace ctui
 
 	public:
 		void update(bool all_keys = false);
-		bool isKeyPressed(int key);
-		bool isKeyJustPressed(int key);
 		CanvasEvent *popEvent();
 		static CanvasEventSystem *getEventSystem();
 		void connectEvent(void (Panel::*_func)(), CanvasEventType _ct, Panel *_pan);

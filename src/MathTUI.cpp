@@ -31,3 +31,21 @@ double ctui::pov(double a, int p)
 	}
 	return a;
 }
+int ctui::clamp(int a, int mn, int mx)
+{
+	if (a < mn)
+		return mn;
+	if (a > mx)
+	{
+		return mx;
+	}
+	return a;
+}
+int ctui::snake(int a, int mx)
+{
+	if (a < 0)
+		return mx + a;
+	if (a >= mx)
+		return a - mx;
+	return a;
+}

@@ -14,6 +14,8 @@ src/MathTUI.cpp
 src/ImageTUI.cpp
 src/TextTUI.cpp
 src/Log.cpp
+src/TUI.cpp
+src/Rect.cpp
 src/ConsoleBase.cpp
 src/panels/CanvasEventSystem.cpp
 src/panels/RectPanel.cpp
@@ -21,7 +23,10 @@ src/panels/ImagePanel.cpp
 src/panels/MarkdownTextPanel.cpp
 src/panels/TextPanel.cpp
 src/boxes/VerticalBox.cpp
-src/boxes/HorizontalBox.cpp)
+src/boxes/HorizontalBox.cpp
+src/input/Input.cpp
+src/input/RectButton.cpp
+)
 
 
 set(ENV_FILE "${CMAKE_SOURCE_DIR}/.env")

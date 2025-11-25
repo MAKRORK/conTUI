@@ -6,7 +6,7 @@
 namespace ctui
 {
 	const ConColor ConColor::none = ConColor(-1);
-	const ConColor ConColor::white = ConColor(0x7);
+	const ConColor ConColor::white = ConColor::toBright(ConColor(0x7));
 	const ConColor ConColor::grey = ConColor(0x7);
 	const ConColor ConColor::black = ConColor();
 

@@ -117,6 +117,16 @@ namespace ctui
 		}
 		return Err::Ok;
 	}
+
+	bool ConsoleBase::isKeyPressed(int key)
+	{
+		return (GetAsyncKeyState(key) & 0x8000);
+	}
+	bool ConsoleBase::isKeyJustPressed(int key)
+	{
+		return (GetAsyncKeyState(key) & 0x1);
+	}
+
 	bool ConsoleBase::isConsoleFocused()
 	{
 		HWND console = GetConsoleWindow();

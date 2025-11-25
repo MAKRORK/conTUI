@@ -28,7 +28,7 @@ namespace ctui
 		}
 		setSize(ConsoleBase::getConsoleBase()->getConsoleSize());
 		size = getAbsoluteSize();
-		maskBuffer = new Panel **[size.x];
+		maskBuffer = new Panel **[size.y];
 		for (int i = 0; i < size.y; i++)
 		{
 			maskBuffer[i] = new Panel *[size.x];
@@ -171,7 +171,7 @@ namespace ctui
 		vec2 cs = getAbsoluteSize();
 		pan->setCovered(false);
 
-				vec2 fn = vec2(ctmin(cs.x, (stmp.x + ptmp.x)), ctmin(cs.y, stmp.y + ptmp.y));
+		vec2 fn = vec2(ctmin(cs.x, (stmp.x + ptmp.x)), ctmin(cs.y, stmp.y + ptmp.y));
 		for (int i = ctmax(ptmp.y, 0); i < fn.y; i++)
 		{
 			for (int j = ctmax(ptmp.x, 0); j < fn.x; j++)
