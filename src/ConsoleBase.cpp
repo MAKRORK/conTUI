@@ -95,7 +95,7 @@ namespace ctui
 			vec2 ps = vec2(x, y + i);
 			if (!ps.inRect(vec2(0), getConsoleBase()->getConsoleSize()))
 				break;
-			printf("\033[%u;%uH", y + i + 1, x + 1);
+			printf("\033[%u;%uH", y + i + 1, x + 1 + rt->offsets[i]);
 			printf("%s\033[0m", rt->txt[i].c_str());
 		}
 		return Err::Ok;

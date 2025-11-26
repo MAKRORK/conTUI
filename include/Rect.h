@@ -4,7 +4,7 @@
 
 namespace ctui
 {
-	class Rect
+	class Rect : public Base
 	{
 	protected:
 		char32_t leftBorderChar = U'|';
@@ -32,7 +32,7 @@ namespace ctui
 
 		void setFillStyle(char32_t _fillChar, ConColor _color, ConColor _backColor);
 		void setFillStyle(ConColor fillColor);
-		rawText *getRawText(vec2 offset, vec2 maxSize, vec2 size);
+		rawText *getRawText(vec2 offset, vec2 maxSize, vec2 size) override;
 	};
 
 }

@@ -21,5 +21,11 @@ namespace ctui
 		rawText *getRawText(vec2 offset, vec2 maxSize) override;
 		void setForeColor(ConColor _foreColor) { foreColor = _foreColor; }
 		void setBackColor(ConColor _backColor) { backColor = _backColor; }
+
+		void setTextAlignHorizontal(AlignHorizontal _textAlignHorizontal) { textAlignHorizontal = _textAlignHorizontal; }
+		void setTextAlignVertical(AlignVertical _textAlignVertical) { textAlignVertical = _textAlignVertical; }
+
+		AlignHorizontal getTextAlignHorizontal() { return textAlignHorizontal; }
+		AlignVertical getTextAlignVertical() { return textAlignVertical; }
 	};
 }

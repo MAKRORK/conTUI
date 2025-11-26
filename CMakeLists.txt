@@ -16,16 +16,19 @@ src/TextTUI.cpp
 src/Log.cpp
 src/TUI.cpp
 src/Rect.cpp
+src/OneLine.cpp
 src/ConsoleBase.cpp
 src/panels/CanvasEventSystem.cpp
 src/panels/RectPanel.cpp
 src/panels/ImagePanel.cpp
 src/panels/MarkdownTextPanel.cpp
 src/panels/TextPanel.cpp
+src/panels/OneLineText.cpp
 src/boxes/VerticalBox.cpp
 src/boxes/HorizontalBox.cpp
 src/input/Input.cpp
 src/input/RectButton.cpp
+src/input/OneLineButton.cpp
 )
 
 

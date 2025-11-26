@@ -7,6 +7,13 @@
 namespace ctui
 {
 
+	void CanvasPanel::destruct()
+	{
+		if (Panel::getRoot() == this)
+		{
+			Panel::setRoot(nullptr);
+		}
+	}
 	void CanvasPanel::initBuffer()
 	{
 
@@ -189,7 +196,7 @@ namespace ctui
 
 	void CanvasPanel::redraw(Panel *p)
 	{
-		if (p->getCovered())
+		if (p == nullptr || p->getCovered())
 		{
 			drawAll(p);
 		}

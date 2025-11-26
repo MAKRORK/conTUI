@@ -34,7 +34,7 @@ namespace ctui
 		Err drawRaw(Panel *p);
 		void setSize(vec2 _size) override;
 		rawText *getRawText(vec2 offset, vec2 maxSize) override;
-
+		void destruct();
 		void onResize() override;
 
 		Err addChild(Panel *p) override;

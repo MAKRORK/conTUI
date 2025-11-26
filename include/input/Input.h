@@ -12,14 +12,16 @@ namespace ctui
 		vec2 idGridInput;
 		bool isActive = false;
 		void setGridInputSlot(vec2 _idGridInput);
+		static void setActiveExist();
 
 	public:
-			static void update();
+		static void update();
 
 		Input(vec2 _idGridInput, vec2 _pos = vec2(0), vec2 _size = vec2(0)) : Panel(_pos, _size)
 		{
 			setGridInputSlot(_idGridInput);
 		}
+		~Input() override;
 
 		virtual void setActive();
 		virtual void setDisActive();

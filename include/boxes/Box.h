@@ -1,5 +1,6 @@
 #pragma once
 #include "panels/Panel.h"
+#include "Log.h"
 
 namespace ctui
 {
@@ -13,6 +14,8 @@ namespace ctui
 		{
 			setDrawable(false);
 		}
+
+		~Box() { Log::getLog()->logString("Box destructed"); }
 
 		virtual vec2 getPanelLocalPos(Panel *p) { return this->getAbsolutePos(); }
 		virtual vec2 getPanelLocalSize(Panel *p) { return this->getAbsoluteSize(); }

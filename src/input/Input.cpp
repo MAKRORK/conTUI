@@ -9,6 +9,32 @@ namespace ctui
 	vec2 Input::inputGridSize = vec2(0);
 	vec2 Input::activeInput = vec2(-1);
 
+	void Input::setActiveExist()
+	{
+		for (int x = 0; x < inputGrid.size(); x++)
+		{
+			for (int y = 0; y < inputGrid[x].size(); y++)
+			{
+				if (inputGrid[x][y])
+				{
+					inputGrid[x][y]->setActive();
+					return;
+				}
+			}
+		}
+		activeInput = -1;
+	}
+
+	Input::~Input()
+	{
+		Log::getLog()->logString("Input destructed");
+		if (activeInput.x == idGridInput.x && activeInput.y == idGridInput.y)
+		{
+			setActiveExist();
+		}
+		inputGrid[idGridInput.x][idGridInput.y] = nullptr;
+	}
+
 	void Input::update()
 	{
 		if (ConsoleBase::isKeyJustPressed(TUI::accept))
@@ -83,7 +109,6 @@ namespace ctui
 	{
 		activeInput = idGridInput;
 		isActive = true;
-
 		startActive();
 		redraw();
 	}

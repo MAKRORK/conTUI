@@ -4,9 +4,10 @@
 namespace ctui
 {
 
-	std::string getLineWithOffset(std::string input, int offset, int maxSize = -1)
+	std::string getLineWithOffset(std::string input, int offset, int maxSize)
 	{
 		bool ansi_started = false;
+		bool unicode_started = false;
 		std::string ansi = "";
 		std::string output = "";
 		int real_len = 0;
@@ -33,7 +34,19 @@ namespace ctui
 			}
 			if (!ansi_started)
 			{
-				real_len++;
+				if (unicode_started && !isUnicodeCont(input[i]))
+				{
+					unicode_started = false;
+				}
+				if (isUnicodeStart(input[i]) && isUnicodeCont(input[i + 1]))
+				{
+					unicode_started = true;
+					real_len++;
+				}
+				if (!unicode_started)
+				{
+					real_len++;
+				}
 			}
 
 			if (ansi_started && input[i] == 'm')
@@ -46,6 +59,13 @@ namespace ctui
 			}
 		}
 		return output;
+	}
+	std::string getLine(int n, char c)
+	{
+		std::string s = "";
+		for (int i = 0; i < n; i++)
+			s += c;
+		return s;
 	}
 	bool isUnicodeCont(unsigned char c)
 	{
@@ -67,7 +87,43 @@ namespace ctui
 			return true;
 		return false;
 	}
-	rawText *autoWrap(const std::string &input, int maxLength, vec2 offset, vec2 maxSize, bool withCols, ConColor col, ConColor backCol)
+
+	int getRealLength(std::string &str)
+	{
+		int l = 0;
+		bool ansi_started = false;
+		bool unicode_started = false;
+		for (int i = 0; i < str.size(); i++)
+		{
+			if (str[i] == 0x1b)
+			{
+				ansi_started = true;
+			}
+			if (!ansi_started)
+			{
+				if (unicode_started && !isUnicodeCont(str[i]))
+				{
+					unicode_started = false;
+				}
+				if (isUnicodeStart(str[i]) && isUnicodeCont(str[i + 1]))
+				{
+					unicode_started = true;
+					l++;
+				}
+				if (!unicode_started)
+				{
+					l++;
+				}
+			}
+			if (ansi_started && str[i] == 'm')
+			{
+				ansi_started = false;
+			}
+		}
+		return l;
+	}
+
+	rawText *autoWrap(const std::string &input, int maxLength, vec2 offset, vec2 maxSize, std::vector<int> &realLens, bool withCols, ConColor col, ConColor backCol)
 	{
 		std::vector<std::string> lines;
 		std::string cur = "";
@@ -77,7 +133,7 @@ namespace ctui
 		int last_space = -1;
 		bool ansi_started = false;
 		bool unicode_started = false;
-
+		// std::vector<int> realLens;
 		attribute a = attribute(ConColor::getForeColor(col));
 		a.addAttribute(ConColor::getBackColor(backCol));
 		attribute c = attribute::clear;
@@ -93,21 +149,17 @@ namespace ctui
 			{
 				if (affter_space != "")
 				{
-					if (offset.x != 0)
-					{
-						lines.push_back(getLineWithOffset(cur + " " + affter_space, offset.x, maxSize.x));
-					}
-					else
-						lines.push_back(cur + " " + affter_space);
+
+					lines.push_back(getLineWithOffset(cur + " " + affter_space, offset.x, maxSize.x));
+
+					realLens.push_back(ctmin(cur_len + 1 + after_space_len, maxSize.x - offset.x));
 				}
 				else
 				{
-					if (offset.x != 0)
-					{
-						lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
-					}
-					else
-						lines.push_back(cur);
+
+					lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
+
+					realLens.push_back(ctmin(cur_len, maxSize.x - offset.x));
 				}
 				cur = "";
 				affter_space = "";
@@ -142,12 +194,10 @@ namespace ctui
 			{
 				if (last_space > 0)
 				{
-					if (offset.x != 0)
-					{
-						lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
-					}
-					else
-						lines.push_back(cur);
+
+					lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
+
+					realLens.push_back(ctmin(cur_len, maxSize.x - offset.x));
 					cur = affter_space;
 					last_space = -1;
 					cur_len = after_space_len;
@@ -156,12 +206,10 @@ namespace ctui
 				}
 				else
 				{
-					if (offset.x != 0)
-					{
-						lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
-					}
-					else
-						lines.push_back(cur);
+
+					lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
+
+					realLens.push_back(ctmin(cur_len, maxSize.x - offset.x));
 					cur = "";
 					affter_space = "";
 					last_space = -1;
@@ -244,21 +292,17 @@ namespace ctui
 		}
 		if (affter_space != "")
 		{
-			if (offset.x != 0)
-			{
-				lines.push_back(getLineWithOffset(cur + " " + affter_space, offset.x, maxSize.x));
-			}
-			else
-				lines.push_back(cur + " " + affter_space);
+
+			lines.push_back(getLineWithOffset(cur + " " + affter_space, offset.x, maxSize.x));
+
+			realLens.push_back(ctmin(cur_len + 1 + after_space_len, maxSize.x - offset.x));
 		}
 		else
 		{
-			if (offset.x != 0)
-			{
-				lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
-			}
-			else
-				lines.push_back(cur);
+
+			lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
+
+			realLens.push_back(ctmin(cur_len, maxSize.x - offset.x));
 		}
 
 		rawText *rt = new rawText(vec2(maxLength, (int)lines.size()));
@@ -277,9 +321,10 @@ namespace ctui
 	{
 		std::vector<rawText *> rts;
 		int lines = 0;
+		std::vector<int> realLens;
 		for (int i = 0; i < rt->size.y; i++)
 		{
-			rawText *rtt = autoWrap(rt->txt[i], maxLength, offset, maxSize, withCols, col, backCol);
+			rawText *rtt = autoWrap(rt->txt[i], maxLength, offset, maxSize, realLens, withCols, col, backCol);
 			lines += rtt->size.y;
 			rts.push_back(rtt);
 		}

@@ -16,9 +16,11 @@ namespace ctui
 		Panel *parent = nullptr;
 		style stl = style();
 		bool covered = false;
+		static Panel *root;
 
 		int padding[4] = {0, 0, 0, 0};
 		bool drawable = true;
+		static std::vector<Panel *> panels;
 
 	protected:
 		virtual void rebuild();
@@ -32,7 +34,10 @@ namespace ctui
 		void setDrawable(bool _d) { drawable = _d; }
 
 	public:
-		Panel(vec2 _pos = vec2(0), vec2 _size = vec2(0)) : pos(_pos), size(_size) {}
+		Panel(vec2 _pos = vec2(0), vec2 _size = vec2(0)) : pos(_pos), size(_size)
+		{
+			panels.push_back(this);
+		}
 		virtual ~Panel();
 		vec2 getPos() { return pos; }
 		virtual vec2 getSize() { return size; }
@@ -42,6 +47,10 @@ namespace ctui
 		void setCovered(bool _c) { covered = _c; }
 		bool getCovered() { return covered; }
 		bool getDrawable() { return drawable; }
+
+		static void setRoot(Panel *p) { root = p; }
+		static Panel *getRoot() { return root; }
+
 		void setPos(vec2 _pos)
 		{
 			pos = _pos;
@@ -57,7 +66,7 @@ namespace ctui
 		virtual void setPadding(int l, int t, int r, int b);
 		virtual void setPadding(int p);
 
-		char debug_sym = ' ';
+		char debug_sym = 'P';
 
 		virtual Err addChild(Panel *p);
 		virtual void removeChild(Panel *p);

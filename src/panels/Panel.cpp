@@ -6,12 +6,33 @@
 
 namespace ctui
 {
-
+	Panel *Panel::root = nullptr;
+	std::vector<Panel *> Panel::panels;
 	Panel::~Panel()
 	{
+		std::string s = "Panel destructed ";
+		s += debug_sym;
+		s += " childs = ";
+		s += std::to_string(childs.size());
+		Log::getLog()->logString(s);
 		if (r)
 			delete r;
+
+		int n = (int)childs.size();
+		for (int i = 0; i < n; i++)
+		{
+			childs[i]->setParent(nullptr);
+			(*childs[i]).~Panel();
+		}
+		if (parent)
+		{
+			parent->removeChild(this);
+			if (root)
+				root->redraw();
+		}
+		Log::getLog()->logString("HM");
 	}
+
 	Err Panel::addChild(Panel *p)
 	{
 		if (dynamic_cast<CanvasPanel *>(p))

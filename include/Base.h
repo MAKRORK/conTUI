@@ -42,6 +42,7 @@ namespace ctui
 	struct rawText
 	{
 		std::string *txt = nullptr;
+		int *offsets = nullptr;
 		vec2 size;
 		rawText(vec2 _size = vec2(0)) : size(_size)
 		{
@@ -50,11 +51,17 @@ namespace ctui
 			{
 				txt[i] = "";
 			}
+			offsets = new int[size.y];
+			for (int i = 0; i < size.y; i++)
+			{
+				offsets[i] = 0;
+			}
 		}
 		~rawText()
 		{
 
 			delete[] txt;
+			delete[] offsets;
 		}
 	};
 
@@ -117,5 +124,10 @@ namespace ctui
 		const static int inverted_colors = 7;
 		const static int hide = 8;
 		const static int crossed_out = 9;
+	};
+	class Base
+	{
+	public:
+		virtual rawText *getRawText(vec2 offset, vec2 maxSize, vec2 size) { return nullptr; }
 	};
 };
