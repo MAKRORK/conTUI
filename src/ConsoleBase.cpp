@@ -17,6 +17,16 @@ namespace ctui
 		}
 		return console;
 	}
+
+	void ConsoleBase::init()
+	{
+		console = new ConsoleBase();
+		console->hIn = GetStdHandle(STD_INPUT_HANDLE);
+		DWORD mode;
+		GetConsoleMode(console->hIn, &mode);
+		mode &= ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT | ENABLE_QUICK_EDIT_MODE);
+		SetConsoleMode(console->hIn, mode);
+	}
 	vec2 ConsoleBase::getConsoleSize()
 	{
 		CONSOLE_SCREEN_BUFFER_INFO info;
@@ -61,11 +71,56 @@ namespace ctui
 		return -1;
 	}
 
+	void ConsoleBase::consoleEventsBufferClear()
+	{
+		GetNumberOfConsoleInputEvents(hIn, &events);
+		// std::string s = "";
+		if (events > 0)
+		{
+			ReadConsoleInput(hIn, irInBuf, 128, &events);
+		}
+	}
+
+	std::string ConsoleBase::getEnterText()
+	{
+		GetNumberOfConsoleInputEvents(hIn, &events);
+		std::string s = "";
+		if (events > 0)
+		{
+			ReadConsoleInput(hIn, irInBuf, 128, &events);
+
+			for (DWORD i = 0; i < events; i++)
+			{
+				if (irInBuf[i].EventType == KEY_EVENT)
+				{
+					KEY_EVENT_RECORD &kev = irInBuf[i].Event.KeyEvent;
+
+					if (kev.bKeyDown)
+					{
+						wchar_t ch = kev.uChar.UnicodeChar;
+						if (ch != 0)
+						{
+							s += (char)ch;
+												}
+					}
+				}
+			}
+		}
+		return s;
+	}
+
+	Err ConsoleBase::setCursorToPoint(vec2 point)
+	{
+		if (!point.inRect(vec2(0), getConsoleBase()->getConsoleSize()))
+			return Err::CursorOutOfRenge;
+		printf("\033[%u;%uH", point.y + 1, point.x + 1);
+		return Err::Ok;
+	}
+
 	Err ConsoleBase::outChar(const symbol &sym, int x, int y)
 	{
 		unsigned char utf8[5];
 		int n = utf8Encode(sym.chr, utf8);
-
 		if (n < 1)
 		{
 			return Err::ConvertCharToUtf8Error;
@@ -77,8 +132,9 @@ namespace ctui
 			if (utf8[i] == 0)
 				break;
 		}
-
-		printf("\033[%u;%uH", y, x);
+		Err res = setCursorToPoint(vec2(x, y));
+		if (res != Err::Ok)
+			return res;
 		attribute a = sym.attr;
 
 		printf("%s", a.getAttributes().c_str());
@@ -87,15 +143,12 @@ namespace ctui
 	}
 	Err ConsoleBase::outRawText(rawText *rt, int x, int y)
 	{
-		vec2 p = vec2(x, y);
-		if (!p.inRect(vec2(0), getConsoleBase()->getConsoleSize()))
-			return Err::CursorOutOfRenge;
 		for (int i = 0; i < rt->size.y; i++)
 		{
-			vec2 ps = vec2(x, y + i);
-			if (!ps.inRect(vec2(0), getConsoleBase()->getConsoleSize()))
-				break;
-			printf("\033[%u;%uH", y + i + 1, x + 1 + rt->offsets[i]);
+			Err res = setCursorToPoint(vec2(x + rt->offsets[i], y + i));
+			if (res != Err::Ok)
+				return res;
+			// printf("\033[%u;%uH", y + i + 1, x + 1 + rt->offsets[i]);
 			printf("%s\033[0m", rt->txt[i].c_str());
 		}
 		return Err::Ok;

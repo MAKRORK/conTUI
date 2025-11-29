@@ -8,7 +8,7 @@ namespace ctui
 	std::vector<std::vector<Input *>> Input::inputGrid;
 	vec2 Input::inputGridSize = vec2(0);
 	vec2 Input::activeInput = vec2(-1);
-
+	Input *Input::currentSelected = nullptr;
 	void Input::setActiveExist()
 	{
 		for (int x = 0; x < inputGrid.size(); x++)
@@ -35,8 +35,13 @@ namespace ctui
 		inputGrid[idGridInput.x][idGridInput.y] = nullptr;
 	}
 
-	void Input::update()
+	void Input::updateAllInput()
 	{
+		if (currentSelected)
+		{
+			currentSelected->updateInput();
+			return;
+		}
 		if (ConsoleBase::isKeyJustPressed(TUI::accept))
 		{
 			inputGrid[activeInput.x][activeInput.y]->accept();
@@ -121,14 +126,17 @@ namespace ctui
 	void Input::setGridInputSlot(vec2 _idGridInput)
 	{
 		idGridInput = _idGridInput;
-		if (idGridInput.x <= inputGrid.size())
+		std::cout << idGridInput.x << " " << inputGrid.size() << '\n';
+		if (idGridInput.x >= inputGrid.size())
 		{
+
 			for (int i = (int)inputGrid.size(); i <= idGridInput.x; i++)
 			{
 				inputGrid.push_back(std::vector<Input *>());
+				std::cout << i << '\n';
 			}
 		}
-		if (idGridInput.y <= inputGrid[idGridInput.x].size())
+		if (idGridInput.y >= inputGrid[idGridInput.x].size())
 		{
 			for (int i = (int)inputGrid[idGridInput.x].size(); i <= idGridInput.y; i++)
 			{

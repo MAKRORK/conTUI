@@ -26,7 +26,7 @@ namespace ctui
 		virtual void rebuild();
 		virtual void setParent(Panel *p);
 		rawText *r = nullptr;
-		virtual void redraw(Panel *p = nullptr);
+
 		void setSizeWithoutRebild(vec2 _size)
 		{
 			size = _size;
@@ -39,6 +39,7 @@ namespace ctui
 			panels.push_back(this);
 		}
 		virtual ~Panel();
+		virtual void redraw(Panel *p = nullptr);
 		vec2 getPos() { return pos; }
 		virtual vec2 getSize() { return size; }
 		vec2 getAbsolutePos();
@@ -65,6 +66,9 @@ namespace ctui
 		virtual void setStyle(PositionType _posType, AlignHorizontal _alignH, AlignVertical _alignV);
 		virtual void setPadding(int l, int t, int r, int b);
 		virtual void setPadding(int p);
+
+		vec2 getPaddingLT() { return vec2(padding[0], padding[1]); }
+		vec2 getPaddingRB() { return vec2(padding[2], padding[3]); }
 
 		char debug_sym = 'P';
 

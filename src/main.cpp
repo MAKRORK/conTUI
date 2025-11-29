@@ -1,5 +1,3 @@
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
 #include <iostream>
 #include "windows.h"
 #include "ConColor.h"
@@ -19,9 +17,11 @@
 #include "input/RectButton.h"
 #include "Log.h"
 #include "input/OneLineButton.h"
+#include "input/InputTextRect.h"
 
 int main()
 {
+	SetConsoleCP(CP_UTF8);
 	SetConsoleOutputCP(CP_UTF8);
 
 	ctui::Log::init();
@@ -29,6 +29,7 @@ int main()
 	ctui::attribute a = ctui::attribute(ctui::ConColor::getBackColor(ctui::ConColor::purple));
 	ctui::attribute a1 = ctui::attribute(0);
 	system("cls");
+
 	std::cout << ctui::ConsoleBase::getConsoleBase()->getConsoleSize().x << ", " << ctui::ConsoleBase::getConsoleBase()->getConsoleSize().y << '\n';
 	ctui::CanvasPanel cp = ctui::CanvasPanel();
 
@@ -62,7 +63,7 @@ int main()
 	tb->setTextAlignVertical(ctui::AlignVertical::TOP);
 	tb->setTextAlignHorizontal(ctui::AlignHorizontal::CENTER);
 	rp->addChild(tb);
-
+	ctui::ConsoleBase::init();
 	hb.addChild(rp);
 	ctui::VerticalBox vb = ctui::VerticalBox(ctui::vec2(1), ctui::vec2(90, 30));
 	vb.setAutoSize(true);
@@ -106,6 +107,7 @@ int main()
 	vb1.setAutoSize(false);
 	vb1.setStyle(ctui::PositionType::Relative, ctui::AlignHorizontal::FULL, ctui::AlignVertical::FULL);
 	vb1.setPadding(4, 4, 4, 2);
+
 	for (int i = 0; i < 3; i++)
 	{
 		ctui::OneLineButton *ob = new ctui::OneLineButton(ctui::vec2(0, i + 2), ctui::vec2(3, 2), 20);
@@ -113,6 +115,17 @@ int main()
 		ob->setHoverBackColor(ctui::ConColor::cyan);
 		vb1.addChild(ob);
 	}
+	ctui::InputTextRect itr = ctui::InputTextRect(ctui::vec2(0, 5), ctui::vec2(0), ctui::vec2(5));
+	itr.getNormalStyleRect()->setFillStyle(' ', ctui::ConColor::black, ctui::ConColor::black);
+	itr.getNormalStyleRect()->setBorder(true, cs[4], ctui::ConColor::black, 0x2502, 0x2500);
+	itr.getNormalStyleRect()->setUniqueCorners(true, 0x256D, 0x256E, 0x2570, 0x256F);
+	itr.getHoverStyleRect()->setFillStyle(' ', ctui::ConColor::black, ctui::ConColor::black);
+	itr.getHoverStyleRect()->setBorder(true, ctui::ConColor::white, ctui::ConColor::black, 0x2502, 0x2500);
+	itr.getHoverStyleRect()->setUniqueCorners(true, 0x256D, 0x256E, 0x2570, 0x256F);
+	itr.setTextPadding(1);
+	itr.setTextColor(ctui::ConColor::white);
+	vb.addChild(&itr);
+
 	rp1->addChild(&vb1);
 	hb.addChild(&vb);
 	cp.addChild(&hb);
@@ -127,10 +140,11 @@ int main()
 		{
 			break;
 		}
-		ctui::Input::update();
-		Sleep(20);
+		ctui::Input::updateAllInput();
+		Sleep(10);
 	}
 	cp.destruct();
+	cp.~CanvasPanel();
 	system("cls");
 	std::string s = "Hello world!🌍😃🚀✨";
 	std::cout << s << '\n';

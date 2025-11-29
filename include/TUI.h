@@ -12,5 +12,6 @@ namespace ctui
 		static int right;
 		static int down;
 		static int accept;
+		static int exit;
 	};
 }

@@ -32,6 +32,8 @@ namespace ctui
 
 		void setFillStyle(char32_t _fillChar, ConColor _color, ConColor _backColor);
 		void setFillStyle(ConColor fillColor);
+
+		ConColor getBackFillColor() { return backColor; }
 		rawText *getRawText(vec2 offset, vec2 maxSize, vec2 size) override;
 	};
 

@@ -8,8 +8,21 @@ namespace ctui
 	{
 		txt = _txt;
 	}
+	void TextPanel::addText(std::string _txt)
+	{
+		txt += _txt;
+	}
+
+	void TextPanel::setRawText(rawText *rt)
+	{
+		r = rt;
+	}
 	rawText *TextPanel::getRawText(vec2 offset, vec2 maxSize)
 	{
+		if (rawTextOut)
+		{
+			return r;
+		}
 		if (r)
 		{
 			delete r;
@@ -27,18 +40,54 @@ namespace ctui
 		}
 		int o = l - rt->size.y;
 		r = new rawText(vec2(s.x, l));
-		for (int i = 0; i < rt->size.y; i++)
+		attribute a = attribute(ConColor::getForeColor(foreColor));
+		a.addAttribute(ConColor::getBackColor(backColor));
+		if (fillStrings)
 		{
-			std::string st = "";
-			if (textAlignHorizontal == AlignHorizontal::CENTER)
+			for (int i = 0; i < rt->size.y; i++)
 			{
-				r->offsets[i + o] = (s.x - realLens[i]) / 2;
+				std::string st = a.getAttributes();
+				std::string fn = a.getAttributes();
+				int l = (s.x - realLens[i]);
+				if (textAlignHorizontal == AlignHorizontal::CENTER)
+				{
+					int d = l / 2;
+					st += getLine(d);
+					fn += getLine(l - d);
+				}
+				else if (textAlignHorizontal == AlignHorizontal::RIGHT)
+				{
+					st += getLine(l);
+				}
+				else if (textAlignHorizontal == AlignHorizontal::LEFT)
+				{
+					fn += getLine(l);
+				}
+				st += attribute::clear.getAttributes();
+				fn += attribute::clear.getAttributes();
+				if (fillLast || i < rt->size.y - 1)
+					r->txt[i + o] += st + rt->txt[i] + fn;
+				else
+				{
+					r->txt[i + o] += st + rt->txt[i];
+				}
 			}
-			if (textAlignHorizontal == AlignHorizontal::RIGHT)
+		}
+		else
+		{
+			for (int i = 0; i < rt->size.y; i++)
 			{
-				r->offsets[i + o] = (s.x - realLens[i]);
+				std::string st = "";
+				if (textAlignHorizontal == AlignHorizontal::CENTER)
+				{
+					r->offsets[i + o] = (s.x - realLens[i]) / 2;
+				}
+				else if (textAlignHorizontal == AlignHorizontal::RIGHT)
+				{
+					r->offsets[i + o] = (s.x - realLens[i]);
+				}
+				r->txt[i + o] += st + rt->txt[i];
 			}
-			r->txt[i + o] += st + rt->txt[i];
 		}
 		return r;
 	}

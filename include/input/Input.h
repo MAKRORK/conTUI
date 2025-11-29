@@ -13,9 +13,15 @@ namespace ctui
 		bool isActive = false;
 		void setGridInputSlot(vec2 _idGridInput);
 		static void setActiveExist();
+		static Input *currentSelected;
+
+	protected:
+		static void setCurrentSelected(Input *inp) { currentSelected = inp; }
+		static void disableCurrentSelected() { currentSelected = nullptr; }
 
 	public:
-		static void update();
+		static void updateAllInput();
+		virtual void updateInput() {}
 
 		Input(vec2 _idGridInput, vec2 _pos = vec2(0), vec2 _size = vec2(0)) : Panel(_pos, _size)
 		{
