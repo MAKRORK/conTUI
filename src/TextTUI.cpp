@@ -171,6 +171,44 @@ namespace ctui
 		}
 		return chrs;
 	}
+
+	std::string chrsToStringWithSelected(std::vector<char32_t> &chrs, vec2 selected, attribute attr)
+	{
+		std::string s = "";
+		bool sel = false;
+		for (int i = 0; i < chrs.size(); i++)
+		{
+			if (i == selected.x && i != selected.y)
+			{
+				s += attr.getAttributes();
+				sel = true;
+			}
+			else if (i == selected.y)
+			{
+				s += attribute::clear.getAttributes();
+				sel = false;
+			}
+			char32_t c = chrs[i];
+			unsigned char ch[4];
+			ch[3] = (unsigned char)c;
+			ch[2] = (unsigned char)(c >> 8);
+			ch[1] = (unsigned char)(c >> 16);
+			ch[0] = (unsigned char)(c >> 24);
+			for (int j = 0; j < 4; j++)
+			{
+				if (ch[j] != 0)
+				{
+					s += ch[j];
+				}
+			}
+		}
+		if (sel)
+		{
+			s += attribute::clear.getAttributes();
+		}
+		return s;
+	}
+
 	std::string chrsToString(std::vector<char32_t> &chrs)
 	{
 		std::string s = "";
@@ -193,6 +231,37 @@ namespace ctui
 		return s;
 	}
 
+	bool include(const std::string &str, char32_t c)
+	{
+		for (int i = 0; i < str.size(); i++)
+		{
+			if (str[i] == c)
+				return true;
+		}
+		return false;
+	}
+
+	int findLastDiv(std::vector<char32_t> &str, int pos, int dir)
+	{
+		if (pos + 2 * dir < 0 || pos + 2 * dir >= str.size())
+		{
+			return pos;
+		}
+		for (int i = pos + 2 * dir; i >= 0 && i < str.size(); i += dir)
+		{
+			if (include(" ,.:;\n", str[i]))
+			{
+				if (dir < 0)
+					return i + 1;
+				return i;
+			}
+		}
+		if (dir < 0)
+			return 0;
+		else
+			return (int)str.size();
+	}
+
 	rawText *autoWrap(const std::string &input, int maxLength, vec2 offset, vec2 maxSize, std::vector<int> &realLens, bool withCols, ConColor col, ConColor backCol)
 	{
 		std::vector<std::string> lines;
@@ -204,7 +273,9 @@ namespace ctui
 		bool ansi_started = false;
 		bool unicode_started = false;
 		bool was_space = false;
-		// std::vector<int> realLens;
+		bool ansi_opened = false;
+		std::string last_ansi = "";
+		int last_ansi_start = -1;
 		attribute a = attribute(ConColor::getForeColor(col));
 		a.addAttribute(ConColor::getBackColor(backCol));
 		attribute c = attribute::clear;
@@ -212,10 +283,10 @@ namespace ctui
 		for (int i = 0; i < input.size(); i++)
 		{
 			was_space = false;
-			// Log::getLog()->logString(std::to_string((int)input[i]));
 			if (input[i] == 0x1b)
 			{
 				ansi_started = true;
+				last_ansi_start = i;
 			}
 			if (input[i] == '\n')
 			{
@@ -234,15 +305,14 @@ namespace ctui
 				affter_space = "";
 				after_space_len = 0;
 				last_space = -1;
-				// i++;
-				// if (input[i + 1] == ' ')
-				//{
-				//	i++;
-				//}
+				if (ansi_opened)
+				{
+					cur = last_ansi + cur;
+				}
 				cur_len = 0;
 				continue;
 			}
-			if (input[i] == ' ')
+			if (include(" ,.:;", input[i]))
 			{
 
 				if (last_space != -1)
@@ -254,22 +324,27 @@ namespace ctui
 					after_space_len = 0;
 					was_space = true;
 				}
-				cur += ' ';
+				cur += input[i];
 				last_space = i;
 				cur_len++;
 				if (cur_len > maxLength)
 				{
-					// cur += ' ';
 					lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
 					realLens.push_back(ctmin(cur_len, maxSize.x - offset.x));
 					cur = "";
 					cur_len = 0;
-					// last_space = -1;
+					if (ansi_opened)
+					{
+						cur = last_ansi + cur;
+						last_ansi = "";
+						ansi_opened = false;
+					}
 				}
 				continue;
 			}
 			if ((cur_len + after_space_len) >= maxLength)
 			{
+
 				if (last_space > 0)
 				{
 					lines.push_back(getLineWithOffset(cur, offset.x, maxSize.x));
@@ -290,6 +365,10 @@ namespace ctui
 					cur_len = 0;
 					after_space_len = 0;
 				}
+				if (ansi_opened)
+				{
+					cur = last_ansi + cur;
+				}
 			}
 			if (isUnicodeStart(input[i]) && isUnicodeCont(input[i + 1]))
 			{
@@ -297,14 +376,10 @@ namespace ctui
 				if (last_space == -1)
 				{
 					cur += input[i];
-					// if (!ansi_started)
-					//	cur_len++;
 				}
 				else
 				{
 					affter_space += input[i];
-					// if (!ansi_started)
-					//	after_space_len++;
 				}
 			}
 			else if (unicode_started)
@@ -351,15 +426,29 @@ namespace ctui
 			if (ansi_started && input[i] == 'm')
 			{
 				ansi_started = false;
-				if (input[i - 1] == '0' && input[i - 2] == '[' && withCols)
+				if (input[i - 1] == '0' && input[i - 2] == '[')
 				{
+
 					if (last_space == -1)
 					{
-						cur += a.getAttributes();
+						if (withCols)
+							cur += a.getAttributes();
+						last_ansi = "";
 					}
 					else
 					{
 						affter_space += a.getAttributes();
+						last_ansi = "";
+					}
+					ansi_opened = false;
+				}
+				else
+				{
+					ansi_opened = true;
+					// last_ansi = "";
+					for (int j = last_ansi_start; j <= i; j++)
+					{
+						last_ansi += input[j];
 					}
 				}
 			}
@@ -370,8 +459,10 @@ namespace ctui
 			if (input[input.size() - 1] == ' ')
 				t = true;
 		}
+
 		if (affter_space != "" || t)
 		{
+
 			lines.push_back(getLineWithOffset(cur + affter_space, offset.x, maxSize.x));
 
 			realLens.push_back(ctmin(cur_len + after_space_len, maxSize.x - offset.x));

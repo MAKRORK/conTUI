@@ -19,6 +19,7 @@ namespace ctui
 	void InputTextRect::setTextColor(ConColor col)
 	{
 		tp->setForeColor(col);
+		textColor = col;
 		tp->setBackColor(hoverRect.getBackFillColor());
 	}
 
@@ -74,6 +75,11 @@ namespace ctui
 	{
 		vec2 p = 0;
 		int n = txtPos;
+		if (lens.size() == 0)
+		{
+			p.x = n;
+			return p;
+		}
 		for (int i = 0; i < lens.size() - 1; i++)
 		{
 
@@ -100,23 +106,70 @@ namespace ctui
 
 		bool bps = false;
 		bool del = false;
-
+		bool selStart = false;
 		vec2 cps = 0;
+		int wps = 0;
 		if (ConsoleBase::isKeyJustPressed(TUI::left))
 		{
 			cps.x -= 1;
+			if (ConsoleBase::isKeyPressed(TUI::selectButton))
+			{
+				selStart = true;
+				if (!selectStarted)
+				{
+					selectStarted = true;
+					selectStartPoint = txtCursorPos;
+				}
+			}
+			if (ConsoleBase::isKeyPressed(TUI::wordJampButton))
+			{
+				wps += -1;
+				cps.x = 0;
+			}
 		}
 		if (ConsoleBase::isKeyJustPressed(TUI::right))
 		{
 			cps.x += 1;
+			if (ConsoleBase::isKeyPressed(TUI::selectButton))
+			{
+				selStart = true;
+				if (!selectStarted)
+				{
+					selectStarted = true;
+					selectStartPoint = txtCursorPos;
+				}
+			}
+			if (ConsoleBase::isKeyPressed(TUI::wordJampButton) || wps != 0)
+			{
+				wps += 1;
+				cps.x = 0;
+			}
 		}
 		if (ConsoleBase::isKeyJustPressed(TUI::up))
 		{
 			cps.y -= 1;
+			if (ConsoleBase::isKeyPressed(TUI::selectButton))
+			{
+				selStart = true;
+				if (!selectStarted)
+				{
+					selectStarted = true;
+					selectStartPoint = txtCursorPos;
+				}
+			}
 		}
 		if (ConsoleBase::isKeyJustPressed(TUI::down))
 		{
 			cps.y += 1;
+			if (ConsoleBase::isKeyPressed(TUI::selectButton))
+			{
+				selStart = true;
+				if (!selectStarted)
+				{
+					selectStarted = true;
+					selectStartPoint = txtCursorPos;
+				}
+			}
 		}
 		if (ConsoleBase::isKeyJustPressed(CTKey::CTK_BACKSPACE))
 		{
@@ -147,42 +200,102 @@ namespace ctui
 				s += st[i];
 			}
 		}
-		if (s != "" || cps.x != 0 || cps.y != 0 || (bps || del))
+		if (s != "" || cps.x != 0 || cps.y != 0 || (bps || del) || wps != 0)
 		{
 			vec2 sz = getAbsoluteSize() - (tp->getPaddingLT() + tp->getPaddingRB());
 			vec2 pos = getAbsolutePos() + tp->getPaddingLT();
 			bool rd = false;
-			txtCursorPos = getTextCursorPos(realCursorPos, cps, realLens, sz);
-			if (bps && txtCursorPos > 0)
+
+			if (cps.x != 0 || cps.y != 0 || wps != 0)
 			{
-				txtt.erase(txtt.begin() + (size_t)(txtCursorPos - 1));
-				txtCursorPos--;
-				rd = true;
+				txtCursorPos = getTextCursorPos(realCursorPos, cps, realLens, sz);
+				if (wps != 0)
+				{
+					txtCursorPos = findLastDiv(txtt, txtCursorPos, wps);
+				}
+				if (selectStarted && selStart)
+				{
+					selected.x = ctmin(txtCursorPos, selectStartPoint);
+					selected.y = ctmax(txtCursorPos, selectStartPoint);
+					rd = true;
+				}
+			}
+			if (bps)
+			{
+				if (selected.x - selected.y != 0)
+				{
+					txtt.erase(txtt.begin() + selected.x, txtt.begin() + selected.y);
+					txtCursorPos = selected.x;
+					selectStarted = false;
+					selectStartPoint = -1;
+					selected = 0;
+					rd = true;
+				}
+				else if (txtCursorPos > 0)
+				{
+					txtt.erase(txtt.begin() + (size_t)(txtCursorPos - 1));
+					txtCursorPos--;
+					rd = true;
+				}
 			}
 			if (del && txtCursorPos < txtt.size())
 			{
-				txtt.erase(txtt.begin() + (size_t)(txtCursorPos));
+				if (selected.x - selected.y != 0)
+				{
+					txtt.erase(txtt.begin() + selected.x, txtt.begin() + selected.y);
+					txtCursorPos = selected.x;
+					selectStarted = false;
+					selectStartPoint = -1;
+					selected = 0;
+				}
+				else
+					txtt.erase(txtt.begin() + (size_t)(txtCursorPos));
 				rd = true;
 			}
 
 			if (s != "")
 			{
 				std::vector<char32_t> chrs = stringToChars(s);
-				txtt.insert((txtt.begin()) + (size_t)txtCursorPos, chrs.begin(), chrs.end());
+				if (selected.x - selected.y != 0)
+				{
+					txtt.erase(txtt.begin() + selected.x, txtt.begin() + selected.y);
+					txtt.insert((txtt.begin()) + (size_t)selected.x, chrs.begin(), chrs.end());
+					txtCursorPos = selected.x;
+					selectStarted = false;
+					selectStartPoint = -1;
+					selected = 0;
+				}
+				else
+					txtt.insert((txtt.begin()) + (size_t)txtCursorPos, chrs.begin(), chrs.end());
 				txtCursorPos += (int)chrs.size();
+
 				rd = true;
 			}
-			realCursorPos = getRealCursorPos(txtCursorPos, realLens);
+			if (selectStarted && !selStart)
+			{
+				selectStarted = false;
+				selectStartPoint = -1;
+				selected = 0;
+
+				rd = true;
+			}
+
 			if (rd)
 			{
+
 				realLens = std::vector<int>();
-				txt = chrsToString(txtt);
+				// attribute as = attribute(ConColor::getForeColor(textColor));
+				// as.addAttribute(ConColor::getBackColor(selectedColor));
+				txt = chrsToStringWithSelected(txtt, selected, selectedTextStyle);
+
+				// txt = chrsToString(txtt);
+
 				rawText *rt = autoWrap(txt, sz.x, 0, vec2(sz.x, 10000), realLens, true, tp->getForeColor(), tp->getBackColor());
 				rawText *rrr = new rawText(sz);
 
 				attribute a = attribute(ConColor::getForeColor(tp->getForeColor()));
 				a.addAttribute(ConColor::getBackColor(tp->getBackColor()));
-				
+
 				for (int i = 0; i < rrr->size.y; i++)
 				{
 					if (i < rt->size.y)
@@ -203,7 +316,7 @@ namespace ctui
 				tp->setRawText(rrr);
 				tp->redraw();
 			}
-
+			realCursorPos = getRealCursorPos(txtCursorPos, realLens);
 			ConsoleBase::setCursorToPoint(pos + realCursorPos);
 		}
 	}

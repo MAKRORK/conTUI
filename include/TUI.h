@@ -13,5 +13,7 @@ namespace ctui
 		static int down;
 		static int accept;
 		static int exit;
+		static int selectButton;
+		static int wordJampButton;
 	};
 }

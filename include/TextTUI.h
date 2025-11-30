@@ -11,8 +11,11 @@ namespace ctui
 	bool isUnicodeStart(unsigned char c);
 	std::string getLine(int n, char c = ' ');
 	int getRealLength(std::string &str);
+	int findLastDiv(std::vector<char32_t> &str, int pos, int dir = -1);
+	bool include(const std::string &str, char32_t c);
 	std::vector<char32_t> stringToChars(std::string &str);
 	std::string chrsToString(std::vector<char32_t> &chrs);
+	std::string chrsToStringWithSelected(std::vector<char32_t> &chrs, vec2 selected, attribute attr);
 	rawText *autoWrap(const std::string &input, int maxLength, vec2 offset = 0, vec2 maxSize = -1, std::vector<int> &realLens = std::vector<int>(), bool withCols = true, ConColor col = ConColor::white, ConColor backCol = ConColor::black);
 	rawText *autoWrap(rawText *rt, int maxLength, vec2 offset = 0, vec2 maxSize = -1, bool withCols = true, ConColor col = ConColor::white, ConColor backCol = ConColor::black);
 }

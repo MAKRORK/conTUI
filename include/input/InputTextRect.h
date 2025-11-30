@@ -17,6 +17,13 @@ namespace ctui
 		int getTextCursorPos(vec2 realPos, vec2 cps, std::vector<int> &lens, vec2 size);
 		vec2 getRealCursorPos(int txtPos, std::vector<int> &lens);
 
+		vec2 selected = vec2(0, 0);
+		attribute selectedTextStyle = attribute();
+		ConColor textColor = ConColor::white;
+
+		bool selectStarted = false;
+		int selectStartPoint = -1;
+
 		TextPanel *tp = nullptr;
 		std::string txt = "";
 		std::vector<char32_t> txtt;
@@ -29,7 +36,9 @@ namespace ctui
 			tp->setStyle(PositionType::Relative, AlignHorizontal::FULL, AlignVertical::FULL);
 			tp->setFillStrings(true, false);
 			tp->setRawTextOut(true);
-			setTextColor(ConColor::white);
+			setTextColor(textColor);
+			selectedTextStyle.addAttribute(ConColor::getForeColor(ConColor::white));
+			selectedTextStyle.addAttribute(ConColor::getBackColor(ConColor::grey));
 			this->addChild(tp);
 		}
 
@@ -39,6 +48,7 @@ namespace ctui
 		rawText *getRawText(vec2 offset, vec2 maxSize);
 
 		void setTextColor(ConColor col);
+		void setSelectedTextAttribute(attribute attr) { selectedTextStyle = attr; }
 
 		void setTextPadding(int p);
 		void setTextPadding(int l, int t, int r, int b);
