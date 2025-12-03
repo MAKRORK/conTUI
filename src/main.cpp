@@ -105,6 +105,10 @@ int main()
 	ctui::InputTextLine *tl = new ctui::InputTextLine(ctui::vec2(0, 2), ctui::vec2(3, 2), 20);
 	tl->setStyle(ctui::PositionType::Relative, ctui::AlignHorizontal::FULL, ctui::AlignVertical::TOP);
 	tl->setPadding(4, 2, 4, 2);
+	tl->setForeColor(ctui::ConColor::white);
+	tl->setBackColor(ctui::ConColor::moonstone);
+	tl->setHoverForeColor(ctui::ConColor::black);
+	tl->setHoverBackColor(ctui::ConColor::cyan);
 	rp1->addChild(tl);
 	vb.addChild(rp1);
 

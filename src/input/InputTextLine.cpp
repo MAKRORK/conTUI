@@ -34,6 +34,24 @@ namespace ctui
 		ConsoleBase::setCursorToPoint(getAbsolutePos());
 	}
 
+	void InputTextLine::updateNormalState()
+	{
+		if (!getIsActive())
+		{
+			oneLine.setForeColor(foreColor);
+			oneLine.setBackColor(backColor);
+		}
+	}
+
+	void InputTextLine::updateHoverState()
+	{
+		if (getIsActive())
+		{
+			oneLine.setForeColor(hoverForeColor);
+			oneLine.setBackColor(hoverBackColor);
+		}
+	}
+
 	void InputTextLine::startActive()
 	{
 		oneLine.setForeColor(hoverForeColor);
@@ -212,25 +230,36 @@ namespace ctui
 
 				rd = true;
 			}
-
-			if (txtCursorPos - textHorizontalOffset >= sz.x)
+			if (!rd)
 			{
-				textHorizontalOffset += (txtCursorPos - textHorizontalOffset) - sz.x + 1;
-				rd = true;
-			}
-			else if (txtCursorPos - textHorizontalOffset < 0)
-			{
-				textHorizontalOffset += txtCursorPos - textHorizontalOffset;
-				rd = true;
+				if (txtCursorPos - textHorizontalOffset >= sz.x)
+				{
+					textHorizontalOffset += (txtCursorPos - textHorizontalOffset) - sz.x + 1;
+					rd = true;
+				}
+				else if (txtCursorPos - textHorizontalOffset < 0)
+				{
+					textHorizontalOffset += txtCursorPos - textHorizontalOffset;
+					rd = true;
+				}
 			}
 
 			if (rd)
 			{
-				if (txtt.size() - textHorizontalOffset >= sz.x)
+				// if (txtt.size() - textHorizontalOffset >= sz.x)
+				//{
+				//	textHorizontalOffset += ((int)txtt.size() - textHorizontalOffset) - sz.x + 1;
+				// }
+				if (txtCursorPos - textHorizontalOffset >= sz.x)
 				{
-					textHorizontalOffset += ((int)txtt.size() - textHorizontalOffset) - sz.x + 1;
+					textHorizontalOffset += (txtCursorPos - textHorizontalOffset) - sz.x + 1;
 				}
-				oneLine.setLineText(chrsToStringWithSelected(getTextWithOffset(txtt, textHorizontalOffset, sz.x), selected, selectedTextStyle));
+				else if (txtCursorPos - textHorizontalOffset < 0)
+				{
+					textHorizontalOffset += txtCursorPos - textHorizontalOffset;
+				}
+
+				oneLine.setLineText(chrsToStringWithSelected(getTextWithOffset(txtt, textHorizontalOffset, sz.x), selected - textHorizontalOffset, selectedTextStyle));
 				redraw();
 			}
 			ConsoleBase::setCursorToPoint((pos + vec2(txtCursorPos - textHorizontalOffset, 0)));

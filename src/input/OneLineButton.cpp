@@ -18,6 +18,24 @@ namespace ctui
 		Panel::setStyle(_posType, _alignH, _alignV);
 	}
 
+	void OneLineButton::updateNormalState()
+	{
+		if (!getIsActive())
+		{
+			oneLine.setForeColor(foreColor);
+			oneLine.setBackColor(backColor);
+		}
+	}
+
+	void OneLineButton::updateHoverState()
+	{
+		if (getIsActive())
+		{
+			oneLine.setForeColor(hoverForeColor);
+			oneLine.setBackColor(hoverBackColor);
+		}
+	}
+
 	void OneLineButton::startActive()
 	{
 		oneLine.setForeColor(hoverForeColor);

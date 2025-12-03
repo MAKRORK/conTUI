@@ -19,7 +19,7 @@ namespace ctui
 			rrr->txt[0] += getLine((size.x - l) / 2);
 			rrr->txt[0] += rt->txt[0];
 			rrr->txt[0] += a.getAttributes();
-			rrr->txt[0] += getLine((size.x - l) / 2);
+			rrr->txt[0] += getLine(size.x - l - (size.x - l) / 2);
 			rrr->txt[0] += attribute::clear.getAttributes();
 		}
 		else if (textAlign == AlignHorizontal::RIGHT)

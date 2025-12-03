@@ -177,6 +177,7 @@ namespace ctui
 	{
 		std::string s = "";
 		bool sel = false;
+
 		for (int i = 0; i < chrs.size(); i++)
 		{
 			if (i == selected.x && i != selected.y)
@@ -206,6 +207,10 @@ namespace ctui
 		if (sel)
 		{
 			s += attribute::clear.getAttributes();
+		}
+		if (selected.x < 0 && selected.y - selected.x >= 0)
+		{
+			s = attr.getAttributes() + s;
 		}
 		return s;
 	}

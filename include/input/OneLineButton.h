@@ -12,6 +12,8 @@ namespace ctui
 		ConColor backColor = ConColor::white;
 		ConColor hoverForeColor = ConColor::white;
 		ConColor hoverBackColor = ConColor::black;
+		void updateNormalState();
+		void updateHoverState();
 
 	public:
 		OneLineButton(vec2 _idGridInput, vec2 _pos, int length) : Input(_idGridInput, _pos, vec2(length, 1))
@@ -25,10 +27,26 @@ namespace ctui
 
 		void setStyle(PositionType _posType, AlignHorizontal _alignH, AlignVertical _alignV) override;
 
-		void setForeColor(ConColor _foreColor) { foreColor = _foreColor; }
-		void setBackColor(ConColor _backColor) { backColor = _backColor; }
-		void setHoverForeColor(ConColor _hoverForeColor) { hoverForeColor = _hoverForeColor; }
-		void setHoverBackColor(ConColor _hoverBackColor) { hoverBackColor = _hoverBackColor; }
+		void setForeColor(ConColor _foreColor)
+		{
+			foreColor = _foreColor;
+			updateNormalState();
+		}
+		void setBackColor(ConColor _backColor)
+		{
+			backColor = _backColor;
+			updateNormalState();
+		}
+		void setHoverForeColor(ConColor _hoverForeColor)
+		{
+			hoverForeColor = _hoverForeColor;
+			updateHoverState();
+		}
+		void setHoverBackColor(ConColor _hoverBackColor)
+		{
+			hoverBackColor = _hoverBackColor;
+			updateHoverState();
+		}
 
 		void startActive() override;
 		void startDisActive() override;
