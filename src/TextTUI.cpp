@@ -1,5 +1,6 @@
 #include "TextTUI.h"
 #include "Log.h"
+#include "ConsoleBase.h"
 
 namespace ctui
 {

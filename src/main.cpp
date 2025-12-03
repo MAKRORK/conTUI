@@ -18,6 +18,7 @@
 #include "Log.h"
 #include "input/OneLineButton.h"
 #include "input/InputTextRect.h"
+#include "input/InputTextLine.h"
 
 int main()
 {
@@ -93,14 +94,18 @@ int main()
 	rp1->setBorder(true, cs[3], ctui::ConColor::black, 0x2502, 0x2500);
 	rp1->setUniqueCorners(true, 0x256D, 0x256E, 0x2570, 0x256F);
 
-	ctui::OneLineText *ot = new ctui::OneLineText(ctui::vec2(3, 2), 20);
-	ot->setLineText("I like ANIME!");
-	ot->setStyle(ctui::PositionType::Relative, ctui::AlignHorizontal::FULL, ctui::AlignVertical::TOP);
-	ot->getStyleLine()->setTextAlign(ctui::AlignHorizontal::CENTER);
-	ot->getStyleLine()->setForeColor(ctui::ConColor::ligth_red);
-	ot->getStyleLine()->setBackColor(ctui::ConColor::white);
-	ot->setPadding(4, 2, 4, 2);
-	rp1->addChild(ot);
+	// ctui::OneLineText *ot = new ctui::OneLineText(ctui::vec2(3, 2), 20);
+	// ot->setLineText("I like ANIME!");
+	// ot->setStyle(ctui::PositionType::Relative, ctui::AlignHorizontal::FULL, ctui::AlignVertical::TOP);
+	// ot->getStyleLine()->setTextAlign(ctui::AlignHorizontal::CENTER);
+	// ot->getStyleLine()->setForeColor(ctui::ConColor::ligth_red);
+	// ot->getStyleLine()->setBackColor(ctui::ConColor::white);
+	// ot->setPadding(4, 2, 4, 2);
+	// rp1->addChild(ot);
+	ctui::InputTextLine *tl = new ctui::InputTextLine(ctui::vec2(0, 2), ctui::vec2(3, 2), 20);
+	tl->setStyle(ctui::PositionType::Relative, ctui::AlignHorizontal::FULL, ctui::AlignVertical::TOP);
+	tl->setPadding(4, 2, 4, 2);
+	rp1->addChild(tl);
 	vb.addChild(rp1);
 
 	ctui::VerticalBox vb1 = ctui::VerticalBox(ctui::vec2(1), ctui::vec2(90, 30));
@@ -110,12 +115,12 @@ int main()
 
 	for (int i = 0; i < 3; i++)
 	{
-		ctui::OneLineButton *ob = new ctui::OneLineButton(ctui::vec2(0, i + 2), ctui::vec2(3, 2), 20);
+		ctui::OneLineButton *ob = new ctui::OneLineButton(ctui::vec2(0, i + 3), ctui::vec2(3, 2), 20);
 		ob->setLineText("Line Button " + std::to_string(i));
 		ob->setHoverBackColor(ctui::ConColor::cyan);
 		vb1.addChild(ob);
 	}
-	ctui::InputTextRect itr = ctui::InputTextRect(ctui::vec2(0, 5), ctui::vec2(0), ctui::vec2(5));
+	ctui::InputTextRect itr = ctui::InputTextRect(ctui::vec2(0, 6), ctui::vec2(0), ctui::vec2(5));
 	itr.getNormalStyleRect()->setFillStyle(' ', ctui::ConColor::black, ctui::ConColor::black);
 	itr.getNormalStyleRect()->setBorder(true, cs[4], ctui::ConColor::black, 0x2502, 0x2500);
 	itr.getNormalStyleRect()->setUniqueCorners(true, 0x256D, 0x256E, 0x2570, 0x256F);

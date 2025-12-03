@@ -28,6 +28,7 @@ src/boxes/VerticalBox.cpp
 src/boxes/HorizontalBox.cpp
 src/input/Input.cpp
 src/input/InputTextRect.cpp
+src/input/InputTextLine.cpp
 src/input/RectButton.cpp
 src/input/OneLineButton.cpp
 )

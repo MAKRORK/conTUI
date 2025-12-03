@@ -279,30 +279,48 @@ namespace ctui
 
 				rd = true;
 			}
+			if (!rd)
+			{
+				realCursorPos = getRealCursorPos(txtCursorPos, realLens);
+				if (realCursorPos.y - textVerticalOffset >= sz.y)
+				{
+					textVerticalOffset += ((realCursorPos.y - textVerticalOffset) - sz.y) + 1;
+					rd = true;
+				}
+				else if (realCursorPos.y - textVerticalOffset < 0)
+				{
+					textVerticalOffset += realCursorPos.y - textVerticalOffset;
+					rd = true;
+				}
+			}
 
 			if (rd)
 			{
 
 				realLens = std::vector<int>();
-				// attribute as = attribute(ConColor::getForeColor(textColor));
-				// as.addAttribute(ConColor::getBackColor(selectedColor));
 				txt = chrsToStringWithSelected(txtt, selected, selectedTextStyle);
-
-				// txt = chrsToString(txtt);
 
 				rawText *rt = autoWrap(txt, sz.x, 0, vec2(sz.x, 10000), realLens, true, tp->getForeColor(), tp->getBackColor());
 				rawText *rrr = new rawText(sz);
 
 				attribute a = attribute(ConColor::getForeColor(tp->getForeColor()));
 				a.addAttribute(ConColor::getBackColor(tp->getBackColor()));
-
-				for (int i = 0; i < rrr->size.y; i++)
+				realCursorPos = getRealCursorPos(txtCursorPos, realLens);
+				if (realCursorPos.y - textVerticalOffset >= sz.y)
 				{
-					if (i < rt->size.y)
+					textVerticalOffset += ((realCursorPos.y - textVerticalOffset) - sz.y) + 1;
+				}
+				else if (realCursorPos.y - textVerticalOffset < 0)
+				{
+					textVerticalOffset += realCursorPos.y - textVerticalOffset;
+				}
+				for (int i = 0; i < sz.y; i++)
+				{
+					if (i + textVerticalOffset < rt->size.y)
 					{
-						rrr->txt[i] += rt->txt[i];
+						rrr->txt[i] += rt->txt[i + textVerticalOffset];
 						rrr->txt[i] += a.getAttributes();
-						rrr->txt[i] += getLine(sz.x - realLens[i]);
+						rrr->txt[i] += getLine(sz.x - realLens[i + textVerticalOffset]);
 						rrr->txt[i] += attribute::clear.getAttributes();
 					}
 					else
@@ -316,8 +334,8 @@ namespace ctui
 				tp->setRawText(rrr);
 				tp->redraw();
 			}
-			realCursorPos = getRealCursorPos(txtCursorPos, realLens);
-			ConsoleBase::setCursorToPoint(pos + realCursorPos);
+
+			ConsoleBase::setCursorToPoint((pos + realCursorPos) - vec2(0, textVerticalOffset));
 		}
 	}
 
